@@ -41,13 +41,13 @@ def select_snippets_with_keywords(keyword: str, text: str, window_size: int = 50
 
 
 def get_keywords(query):
-    template = """Select at most 3 most meaningful keywords in lowercase and separated by a comma from this text : {text}"""
+    template = """Select by decreasing order of importance the keywords in lowercase and separated by a comma from this text : {text}"""
     prompt = PromptTemplate(template=template, input_variables=["text"])
     get_keywords_chain = LLMChain(
         prompt=prompt, llm=OpenAI(temperature=0), verbose=True
     )
 
-    return [k.strip() for k in get_keywords_chain.run(query).split(",")]
+    return [k.strip() for k in get_keywords_chain.run(query).split(",")][:3]
 
 
 def google_search_about_education(query: str) -> str:
@@ -147,6 +147,9 @@ google_search_education = Tool(
 
 tools = [google_search_education]
 
+# TODO : Add a case "no data for such response"
+# TODO : Add a tool reply using obs
+
 
 # Finally, let's initialize an agent with the tools, the language model, and the type of agent we want to use.
 agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
@@ -155,4 +158,4 @@ agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbos
 #     "exemple d'activité à organiser pour favoriser apprentissage trandisciplinaire ?"
 # )
 
-agent.run("exemple d'activité transdisciplinaire pour ce1")
+agent.run("autonomie ce1")
